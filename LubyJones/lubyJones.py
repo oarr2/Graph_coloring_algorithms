@@ -7,6 +7,7 @@
 from random import Random
 import multiprocessing
 from multiprocessing import Barrier, Process
+import time
 
 random = Random()
 process_count = 4
@@ -30,9 +31,10 @@ def init_values(adj_list, n_vertex):
     
     return [vertex_set, weight_list]
 
-def read_values(adj_list):
+def read_values(adj_list, n, p):
     n_vertex, n_edges = [0,0]
-    with open("../testCases/example_test.txt", "r") as f:
+    with open("../testCases/test_" + str(n) + "_" + str(p) + ".txt", "r") as f:
+    #with open("../testCases/example_test.txt", "r") as f:
         index = 0
         line_value = []
         for line in f:
@@ -48,10 +50,14 @@ def read_values(adj_list):
     return [n_vertex, n_edges, adj_list]
 
 def find_max(process_id, color_list, weight_list, adj_list):
-    for v_index in range(process_id, len(color_list), process_count):
+    start = time.time()
+    for v_index in range(process_id, len(weight_list), process_count):
         if is_max(v_index, weight_list, adj_list, color_list):
+            #color_list[v_index] = color
             color_vertex(v_index, adj_list, color_list)
-
+    end = time.time()
+    print(end - start)
+    
 def find_min(process_id, color_list, weight_list, adj_list):
     for v_index in range(process_id, len(color_list), process_count):
         if is_min(v_index, weight_list, adj_list):
@@ -95,38 +101,39 @@ def is_max(vertex, weight_list, adj_list, color_list):
     return True
 
 def luby_jones(color_list, weight_list, adj_list):
-    
     while -1 in color_list:
-        processes = []
+        start = time.time()
+        #processes = []
+        
         for process_id in range(process_count):
-            p = Process(target=find_max, args=([process_id, color_list, weight_list, adj_list]))
+            p = Process(target=find_max, args=(process_id, color_list, weight_list, adj_list))
             p.start()
-            processes.append(p)
-
-        for process in processes:
-            process.join()
+            p.join()
+            #processes.append(p)
+        #for process in processes:
+        #    process.join()
+        end = time.time()
+        print(end - start)
         
 
-
-
-
 def run():
-    adj_list = []
-    n_vertex, n_edges, adj_list = read_values(adj_list)
-    print(n_vertex, n_edges)
-    print(adj_list)
-    vertex_set,weight_list = init_values(adj_list, n_vertex)
-    print(vertex_set, weight_list)
     multiprocessing.set_start_method('spawn')
+    #num_vertex = [100]
+    #for n in num_vertex:
+        #for p in range(1, 11):
+    adj_list = []
+    n_vertex, n_edges, adj_list = read_values(adj_list, 100, 10)
+    vertex_set,weight_list = init_values(adj_list, n_vertex)
     color_list = multiprocessing.Array('i', [-1] * n_vertex, lock=False)
-    print("here")
-    print(color_list[0])
-    print("here")
+    print("start")
     main_process = Process(target=luby_jones, args=([color_list, weight_list, adj_list]))
     main_process.start()
     main_process.join()
-    print('The color list is')
+    print("end")
+    colors = set({})
     for colo in color_list:
-        print(colo)
+        colors.add(colo)
+    print("the chromatic number is", len(colors), "the probability is", 1)
+    
 if __name__ == '__main__':
     run()

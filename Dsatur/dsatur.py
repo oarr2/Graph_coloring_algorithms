@@ -1,3 +1,5 @@
+import time
+
 color_list = []
 
 #fill these values with read_values method
@@ -5,11 +7,12 @@ adj_list = []
 n_vertex = 0
 n_edges = 0
 
-def read_values():
+def read_values(n, p):
     global adj_list
     global n_vertex
     global n_edges
-    with open("../testCases/example_test.txt", "r") as f:
+    with open("../testCases/test_" + str(n) + "_" + str(p) + ".txt", "r") as f:
+    #with open("../testCases/test_100_10.txt", "r") as f:
         index = 0
         line_value = []
         for line in f:
@@ -63,8 +66,8 @@ def dsatur(vertex_set):
             color_list.append(new_color_set)
             processed_vertex.add(vertex)
         vertex_set.remove(vertex)
-    print('The color list is:')    
-    print(color_list)
+    #print('The color list is:')    
+    #print(color_list)
     return len(color_list)
 
 def get_vertex_set():
@@ -75,10 +78,17 @@ def get_vertex_set():
     return vertex_set
 
 def run():
-    read_values()  
-    vertex_set = get_vertex_set()
-    chr_num = dsatur(vertex_set)
-    print("The chromatic number is " + str(chr_num))
-
+    start = time.time()
+    num_vertex = [100, 1000, 2000]
+    global color_list
+    for n in num_vertex:
+        for p in range(1, 11):
+            color_list = []
+            read_values(n, p)  
+            vertex_set = get_vertex_set()
+            chr_num = dsatur(vertex_set)
+            print("The chromatic number is " + str(chr_num) + " and probability of " + str(p/10))
+    end = time.time()
+    print("time", end - start)
 if __name__ == '__main__':
     run()
