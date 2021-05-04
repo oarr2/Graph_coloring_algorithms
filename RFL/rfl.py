@@ -32,12 +32,12 @@ def read_values():
                 adj_list[int(line_value[1])].append(int(line_value[0]))
 
 #this can be optimized using a better structure to get the max_degree
-def get_vertex (processed_vertex):
+def get_vertex (processed_vertex, temp_vertex_set):
     vertex = -1
     max_degree = -1
     for v_index in range(len(adj_list)):
         degree = len(adj_list[v_index])
-        if not v_index in processed_vertex:
+        if not v_index in processed_vertex and not v_index in temp_vertex_set:
             if(degree >= max_degree):
                 max_degree = degree
                 vertex = v_index
@@ -59,7 +59,7 @@ def rfl(vertex_set):
         color_class = set({})
         temp_vertex_set = set({})
         while len(vertex_set) != 0:
-            vertex = get_vertex(processed_vertex)
+            vertex = get_vertex(processed_vertex, temp_vertex_set)
             processed_vertex.add(vertex)
             color_class.add(vertex)
             temp_vertex_set.update(get_v_neighbors(vertex, processed_vertex))
