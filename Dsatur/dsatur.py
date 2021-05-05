@@ -77,18 +77,27 @@ def get_vertex_set():
         vertex_set.add(vertex)
     return vertex_set
 
+def write_values(values):
+    with open("dsatur_results.txt", "w") as f:
+        f.write("Chromatic_number Edge_Probability Time")
+        for line in values:
+            f.write("\n")
+            f.write(str(line[0]) + " " + str(line[1]) + " " + str(line[2]))
+
 def run():
-    start = time.time()
     num_vertex = [100, 1000, 2000]
     global color_list
+    values = []
     for n in num_vertex:
         for p in range(1, 11):
+            start = time.time()
             color_list = []
             read_values(n, p)  
             vertex_set = get_vertex_set()
             chr_num = dsatur(vertex_set)
-            print("The chromatic number is " + str(chr_num) + " and probability of " + str(p/10))
-    end = time.time()
-    print("time", end - start)
+            end = time.time()
+            values.append([chr_num, p/10, end - start])
+            #print("The chromatic number is " + str(chr_num) + " and probability of " + str(p/10))
+    write_values(values)
 if __name__ == '__main__':
     run()

@@ -11,7 +11,7 @@ from threading import Thread
 import time
 
 random = Random()
-process_count = 2
+process_count = 5
 
 def init_values(adj_list, n_vertex):
     vertex_set = set([])
@@ -108,12 +108,20 @@ def luby_jones(color_list, weight_list, adj_list):
         for process in processes:
             process.join()
         
+def write_values(values):
+    with open("lubyJones_results.txt", "w") as f:
+        f.write("Chromatic_number Edge_Probability Time")
+        for line in values:
+            f.write("\n")
+            f.write(str(line[0]) + " " + str(line[1]) + " " + str(line[2]))
 
 def run():
-    start = time.time()
+    
     num_vertex = [100, 1000, 2000]
+    values = []
     for n in num_vertex:
         for p in range(1, 11):
+            start = time.time()
             adj_list = []
             n_vertex, n_edges, adj_list = read_values(adj_list, n, p)
             vertex_set,weight_list = init_values(adj_list, n_vertex)
@@ -124,8 +132,9 @@ def run():
             colors = set({})
             for colo in color_list:
                 colors.add(colo)
-            print("the chromatic number is", len(colors), "the probability is", 1)
-    end = time.time()
-    print("time", end - start)
+            #print("the chromatic number is", len(colors), "the probability is", 1)
+            end = time.time()
+            values.append([len(colors), p/10, end - start])
+    write_values(values)
 if __name__ == '__main__':
     run()
