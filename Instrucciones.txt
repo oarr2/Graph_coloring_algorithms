@@ -1,0 +1,26 @@
+Instrucciones 
+
+Clonar el proyecto
+
+DEPENDENCIAS
+
+Instalar dependencias en la carpeta del proyecto
+pip3 install -r requirements.txt
+
+GENERACION DE RESULTADOS
+
+Por ejemplo para el algoritmo Dsatur
+Para generar los tiempos y cantidad de colores usados del algoritmo.
+entramos a la carpeta del algoritmo en este caso "Dsatur"
+Corremos el archivo dsatur.py usando "python dsatur.py" 
+
+Esta generara un archivo de resultados "dsatur_results.txt" en la misma carpeta del algoritmo. 
+Las primeras 10 filas son resultados de grafos de 100 nodos, luego 1000 nodos y 2000 nodos, en total 30 filas.
+
+Esto puede repetirse para los algoritmos RFL y LubyJones
+
+GENERACION DE GRAFICOS DE COMPARACION
+
+Para generar los graficos de comparacion de los algoritmos por cantidad de nodos, 3 graficos de cantidad de colores vs probabilidad y 3 de tiempo vs probabilidad vamos a la carpeta de "plot_points" y luego corremos el archivo plot_points.py usando "python plot_points.py"
+
+Los graficos se guardaran en la misma carpeta de "plot_points"
