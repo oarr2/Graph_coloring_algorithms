@@ -7,6 +7,8 @@ def read_color_prob(prefix, a, b):
     points_y_1000 = []
     points_x_2000 = []
     points_y_2000 = []
+    points_x_4000 = []
+    points_y_4000 = []
     with open('../Dsatur/dsatur_results.txt', 'r') as f:
         index = 0
         for line in f:
@@ -22,6 +24,10 @@ def read_color_prob(prefix, a, b):
                 line = line.split()
                 points_x_2000.append(float(line[b]))
                 points_y_2000.append(float(line[a]))
+            if index > 30 and index <= 40:
+                line = line.split()
+                points_x_4000.append(float(line[b]))
+                points_y_4000.append(float(line[a]))
             index += 1
     
     r_points_x_100 = []
@@ -30,6 +36,8 @@ def read_color_prob(prefix, a, b):
     r_points_y_1000 = []
     r_points_x_2000 = []
     r_points_y_2000 = []
+    r_points_x_4000 = []
+    r_points_y_4000 = []
     with open('../RFL/rfl_results.txt', 'r') as f:
         index = 0
         for line in f:
@@ -45,6 +53,10 @@ def read_color_prob(prefix, a, b):
                 line = line.split()
                 r_points_x_2000.append(float(line[b]))
                 r_points_y_2000.append(float(line[a]))
+            if index > 30 and index <= 40:
+                line = line.split()
+                r_points_x_4000.append(float(line[b]))
+                r_points_y_4000.append(float(line[a]))
             index += 1
             
     l_points_x_100 = []
@@ -53,6 +65,8 @@ def read_color_prob(prefix, a, b):
     l_points_y_1000 = []
     l_points_x_2000 = []
     l_points_y_2000 = []
+    l_points_x_4000 = []
+    l_points_y_4000 = []
     with open('../LubyJones/lubyJones_results.txt', 'r') as f:
         index = 0
         for line in f:
@@ -68,6 +82,10 @@ def read_color_prob(prefix, a, b):
                 line = line.split()
                 l_points_x_2000.append(float(line[b]))
                 l_points_y_2000.append(float(line[a]))
+            if index > 30 and index <= 40:
+                line = line.split()
+                l_points_x_4000.append(float(line[b]))
+                l_points_y_4000.append(float(line[a]))
             index += 1
             
     plt.plot(points_x_100, points_y_100, color='black', linewidth=1, linestyle="-.")
@@ -106,6 +124,19 @@ def read_color_prob(prefix, a, b):
     plt.ylabel(prefix)
     plt.grid()
     plt.savefig(prefix + "graph_with_2000.png")
+    plt.show()
+    plt.close()
+
+    plt.plot(points_x_4000, points_y_4000, color='black', linewidth=1, linestyle="-.")
+    plt.plot(r_points_x_4000, r_points_y_4000, color='red', linewidth=1, linestyle="--")
+    plt.plot(l_points_x_4000, l_points_y_4000, color='green', linewidth=1, linestyle="-")
+    plt.scatter(points_x_4000, points_y_4000, s=5, color='black')
+    plt.scatter(r_points_x_4000, r_points_y_4000, s=5, color='red')
+    plt.scatter(l_points_x_4000, l_points_y_4000, s=5, color='green')
+    plt.xlabel("Probabilidad")
+    plt.ylabel(prefix)
+    plt.grid()
+    plt.savefig(prefix + "graph_with_4000.png")
     plt.show()
     plt.close()
     

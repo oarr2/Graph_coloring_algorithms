@@ -85,7 +85,7 @@ def write_values(values):
             f.write(str(line[0]) + " " + str(line[1]) + " " + str(line[2]))
 
 def run():
-    num_vertex = [100, 1000, 2000]
+    num_vertex = [100, 1000, 2000, 4000]
     global color_list
     values = []
     for n in num_vertex:

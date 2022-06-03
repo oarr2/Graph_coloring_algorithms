@@ -100,6 +100,7 @@ def is_max(vertex, weight_list, adj_list, color_list):
 
 def luby_jones(color_list, weight_list, adj_list):
     while -1 in color_list:
+        start = time.time()
         processes = []
         for process_id in range(process_count):
             p = Thread(target=find_max, args=(process_id, color_list, weight_list, adj_list))
@@ -107,6 +108,8 @@ def luby_jones(color_list, weight_list, adj_list):
             processes.append(p)
         for process in processes:
             process.join()
+        end = time.time()
+        #print("luby_jones", end - start)
         
 def write_values(values):
     with open("lubyJones_results.txt", "w") as f:
@@ -117,7 +120,7 @@ def write_values(values):
 
 def run():
     
-    num_vertex = [100, 1000, 2000]
+    num_vertex = [100, 1000, 2000, 4000]
     values = []
     for n in num_vertex:
         for p in range(1, 11):
@@ -126,9 +129,11 @@ def run():
             n_vertex, n_edges, adj_list = read_values(adj_list, n, p)
             vertex_set,weight_list = init_values(adj_list, n_vertex)
             color_list = [-1 for _ in range(n_vertex)]
+            print("start with ", n, " vertex and ", p, "probability")
             main_process = Thread(target=luby_jones, args=([color_list, weight_list, adj_list]))
             main_process.start()
             main_process.join()
+            print("end")
             colors = set({})
             for colo in color_list:
                 colors.add(colo)

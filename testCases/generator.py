@@ -41,5 +41,8 @@ def run():
     for p in range(1, 11):
         generate_graph(2000, p/10)
 
+    for p in range(1, 11):
+        generate_graph(4000, p/10)
+
 if __name__ == "__main__":
     run()

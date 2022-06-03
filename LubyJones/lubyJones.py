@@ -7,7 +7,10 @@
 from random import Random
 import multiprocessing
 from multiprocessing import Barrier, Process
+from socket import timeout
 import time
+
+from lubyJonesThread import write_values
 
 random = Random()
 process_count = 4
@@ -49,14 +52,18 @@ def read_values(adj_list, n, p):
                 adj_list[int(line_value[1])].append(int(line_value[0]))
     return [n_vertex, n_edges, adj_list]
 
-def find_max(process_id, color_list, weight_list, adj_list):
-    start = time.time()
-    for v_index in range(process_id, len(weight_list), process_count):
-        if is_max(v_index, weight_list, adj_list, color_list):
-            #color_list[v_index] = color
-            color_vertex(v_index, adj_list, color_list)
-    end = time.time()
-    print(end - start)
+def find_max(process_id, color_list, weight_list, adj_list, work_start, work_complete):
+    while True:
+        start = time.time()
+        work_start.wait()
+        #print("here in my while true")
+        for v_index in range(process_id, len(weight_list), process_count):
+            if is_max(v_index, weight_list, adj_list, color_list):
+                #color_list[v_index] = color
+                color_vertex(v_index, adj_list, color_list)
+        work_complete.wait()
+        end = time.time()
+    #print("find max", end - start)
     
 def find_min(process_id, color_list, weight_list, adj_list):
     for v_index in range(process_id, len(color_list), process_count):
@@ -100,40 +107,50 @@ def is_max(vertex, weight_list, adj_list, color_list):
             return False
     return True
 
-def luby_jones(color_list, weight_list, adj_list):
-    while -1 in color_list:
+def luby_jones(color_list, weight_list, adj_list, work_start, work_complete):
+    
+    for process_id in range(process_count):
         start = time.time()
-        #processes = []
-        
-        for process_id in range(process_count):
-            p = Process(target=find_max, args=(process_id, color_list, weight_list, adj_list))
-            p.start()
-            p.join()
-            #processes.append(p)
-        #for process in processes:
-        #    process.join()
+        p = Process(target=find_max, args=(process_id, color_list, weight_list, adj_list, work_start, work_complete))
+        p.start()
         end = time.time()
-        print(end - start)
+        print("luby_jones", end - start)
+    
+    while -1 in color_list:
+        #print("while color")
+        work_start.wait()
+        #print("here i am")
+        work_complete.wait()
+    work_start.abort()
+    
         
 
 def run():
     multiprocessing.set_start_method('spawn')
-    #num_vertex = [100]
-    #for n in num_vertex:
-        #for p in range(1, 11):
-    adj_list = []
-    n_vertex, n_edges, adj_list = read_values(adj_list, 100, 10)
-    vertex_set,weight_list = init_values(adj_list, n_vertex)
-    color_list = multiprocessing.Array('i', [-1] * n_vertex, lock=False)
-    print("start")
-    main_process = Process(target=luby_jones, args=([color_list, weight_list, adj_list]))
-    main_process.start()
-    main_process.join()
-    print("end")
-    colors = set({})
-    for colo in color_list:
-        colors.add(colo)
-    print("the chromatic number is", len(colors), "the probability is", 1)
-    
+    values = []
+    num_vertex = [100, 1000, 2000, 4000]
+    for n in num_vertex:
+        for p in range(1, 11):
+            work_start = Barrier(process_count + 1)
+            work_complete = Barrier(process_count + 1)
+            start = time.time()
+            adj_list = []
+            n_vertex, n_edges, adj_list = read_values(adj_list, n, p)
+            vertex_set,weight_list = init_values(adj_list, n_vertex)
+            color_list = multiprocessing.Array('i', [-1] * n_vertex, lock=False)
+            print("start with ", n, " vertex and ", p, "probability")
+            main_process = Process(target=luby_jones, args=([color_list, weight_list, adj_list, work_start, work_complete]))
+            main_process.start()
+            main_process.join()
+            print("end")
+            colors = set({})
+            for colo in color_list:
+                colors.add(colo)
+            print("the chromatic number is", len(colors), "the probability is", p)
+            end = time.time()
+            values.append([len(colors), p/10, end - start])
+    write_values(values)
 if __name__ == '__main__':
+    
+    
     run()
